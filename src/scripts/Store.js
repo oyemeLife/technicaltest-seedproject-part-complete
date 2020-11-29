@@ -15,7 +15,19 @@ class Store extends Observable {
   }
 
   filter() {
-    return this.state.deals;
+    var deals = this.state.deals;
+    if (this.state.productFilters && this.state.productFilters.length > 0) {
+      deals = deals.filter(e => {
+          var products = e.productTypes.filter(pr => pr.toLowerCase() !== "phone");
+          return products.every(pr => this.state.productFilters.some(f => pr.toLowerCase().includes(f))) &&
+            this.state.productFilters.every(f => products.some(pr => pr.toLowerCase().includes(f)));
+      });
+    }
+
+    if (this.state.providerFilter) {
+      deals = deals.filter(e => e.provider.id == this.state.providerFilter);
+    }
+    return deals;
   }
 
   setDeals(data) {
